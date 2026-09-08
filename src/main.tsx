@@ -58,10 +58,21 @@ function Metric({ label, value }: { label: string; value: string | number }) { r
 function Panel({ title, children }: { title: string; children: React.ReactNode }) { return <section className="panel"><h2>{title}</h2>{children}</section>; }
 
 function TraceWaterfall({ events }: { events: TraceEvent[] }) {
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
+  const runMetadata = events.find(event => event.type === "run")?.metadata;
+  const finalOutput = typeof runMetadata === "object" && runMetadata !== null && typeof (runMetadata as Record<string, unknown>).finalOutput === "string" ? (runMetadata as Record<string, string>).finalOutput : undefined;
   const start = Math.min(...events.map(event => Date.parse(event.startedAt)));
   const end = Math.max(...events.map(event => Date.parse(event.endedAt)));
   const total = Math.max(1, end - start);
-  return <div className="waterfall"><div className="waterfall-head"><span>Span</span><span>Duration</span><span>Timeline</span></div><TraceRows nodes={traceTree(events)} depth={0} start={start} total={total}/></div>;
+  const copyTrace = async () => {
+    try {
+      await copyText(formatTraceForClipboard(events));
+      setCopyState("copied");
+    } catch {
+      setCopyState("failed");
+    }
+  };
+  return <div className="waterfall"><div className="trace-toolbar"><span>{events.length} events</span><button className="copy-trace" onClick={() => void copyTrace()}>{copyState === "copied" ? "Copied" : copyState === "failed" ? "Copy failed" : "Copy nested trace"}</button></div>{finalOutput && <section className="trace-result"><span>Final output</span><p>{finalOutput}</p></section>}<div className="waterfall-head"><span>Span</span><span>Duration</span><span>Timeline</span></div><TraceRows nodes={traceTree(events)} depth={0} start={start} total={total}/></div>;
 }
 
 function TraceRows({ nodes, depth, start, total }: { nodes: TraceNode[]; depth: number; start: number; total: number }) {
@@ -73,5 +84,33 @@ function traceTree(events: TraceEvent[]): TraceNode[] {
   const roots: TraceNode[] = [];
   for (const node of nodes.values()) { const parent = node.event.parentSpanId ? nodes.get(node.event.parentSpanId) : undefined; if (parent) parent.children.push(node); else roots.push(node); }
   return roots;
+}
+
+async function copyText(value: string) {
+  if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(value);
+  const input = document.createElement("textarea");
+  input.value = value;
+  input.style.position = "fixed";
+  input.style.opacity = "0";
+  document.body.append(input);
+  input.select();
+  const copied = document.execCommand("copy");
+  input.remove();
+  if (!copied) throw new Error("Clipboard copy was unavailable");
+}
+
+function formatTraceForClipboard(events: TraceEvent[]) {
+  const indent = (value: string, prefix: string) => value.split("\n").map(line => `${prefix}${line}`).join("\n");
+  const render = (nodes: TraceNode[], prefix = ""): string[] => nodes.flatMap((node, index) => {
+    const isLast = index === nodes.length - 1;
+    const branch = `${prefix}${isLast ? "└─" : "├─"}`;
+    const childPrefix = `${prefix}${isLast ? "  " : "│ "}`;
+    const event = node.event;
+    const lines = [`${branch} [${event.type} · ${event.status} · ${duration(event.durationMs)}] ${event.name}`, `${childPrefix}started: ${event.startedAt}`];
+    if (event.metadata !== undefined) lines.push(`${childPrefix}metadata:\n${indent(formatJson(event.metadata), `${childPrefix}  `)}`);
+    if (event.llm !== undefined) lines.push(`${childPrefix}llm:\n${indent(formatJson(event.llm), `${childPrefix}  `)}`);
+    return [...lines, ...render(node.children, childPrefix)];
+  });
+  return [`Trace ${events[0]?.runId ?? ""}`, ...render(traceTree(events))].join("\n");
 }
 createRoot(document.getElementById("root")!).render(<App />);
