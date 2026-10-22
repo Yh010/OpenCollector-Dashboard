@@ -1,0 +1,260 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-22T00:00:00Z",
+  "title": "Design System: OpenCollector",
+  "extensions": {
+    "colorMeta": {
+      "accent": {
+        "role": "primary",
+        "displayName": "Restrained Link Blue"
+      },
+      "action-top": {
+        "role": "primary",
+        "displayName": "Layered Charcoal Highlight"
+      },
+      "action-bottom": {
+        "role": "primary",
+        "displayName": "Layered Charcoal Base"
+      },
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Warm Canvas"
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "White Surface"
+      },
+      "navigation-selected": {
+        "role": "neutral",
+        "displayName": "Pale Neutral Selection"
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Page Heading",
+        "purpose": "Optically sized Inter Variable; 30px on mobile."
+      },
+      "metric": {
+        "displayName": "Metric Value",
+        "purpose": "Tabular overview values; 28px up to 900px and 25px up to 600px."
+      },
+      "label": {
+        "displayName": "Supporting Label",
+        "purpose": "Secondary text generally 10–11px; deliberate 9px exceptions are the OC mark, type badges, and mobile footer."
+      },
+      "identifier": {
+        "displayName": "Run Identifier",
+        "purpose": "Monospace buttons that open trace detail."
+      }
+    },
+    "shadows": [
+      {
+        "name": "panel",
+        "value": "0 3px 6px #00000003, 0 0 0 1px #e8e8e5",
+        "purpose": "Subtle white panel depth and edge."
+      },
+      {
+        "name": "filters",
+        "value": "0 2px 4px #00000003, 0 0 0 1px #e8e8e5",
+        "purpose": "Filter container."
+      },
+      {
+        "name": "metric-strip",
+        "value": "0 0 0 1px #e8e8e5",
+        "purpose": "One continuous divided metric surface."
+      },
+      {
+        "name": "primary-action",
+        "value": "inset 0 1px 0 #ffffff24, 0 1px 2px #00000026, 0 0 0 1px #262625",
+        "purpose": "Charcoal action highlight, depth, and edge."
+      },
+      {
+        "name": "secondary-rest",
+        "value": "inset 0 1px 0 #fff, 0 1px 2px #0000000a, 0 0 0 1px #e2e2df",
+        "purpose": "White secondary action."
+      },
+      {
+        "name": "secondary-hover",
+        "value": "inset 0 1px 0 #fff, 0 1px 3px #00000012, 0 0 0 1px #d4d4d0",
+        "purpose": "Enabled secondary hover."
+      },
+      {
+        "name": "navigation-selection",
+        "value": "0 1px 3px #00000007, 0 0 0 1px #00000005",
+        "purpose": "Persistent neutral selection with a 280ms transform transition; follows manual scrolling."
+      },
+      {
+        "name": "control-popup",
+        "value": "0 8px 32px #00000016, 0 2px 6px #00000008, 0 0 0 1px #0000000b",
+        "purpose": "Select and calendar popup edge and floating depth."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "Press and disclosure-icon response."
+      },
+      {
+        "name": "navigation",
+        "value": "280ms cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "Imperative section scroll and sliding selection; manual scroll updates the active section. Interrupted by wheel, touch, pointer, or key input; instant for keyboard activation and reduced motion."
+      },
+      {
+        "name": "collapse",
+        "value": "height 160ms cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "ResizeObserver-measured advanced event-type disclosure, without opacity animation; hidden content inert and aria-hidden."
+      },
+      {
+        "name": "label-change",
+        "value": "160ms; opacity and translateY(5px to 0px), exit translateY(-5px)",
+        "purpose": "Apply, refresh, export, and copy feedback."
+      },
+      {
+        "name": "action-transition",
+        "value": "background-color 160ms ease, color 160ms ease, transform 140ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms ease",
+        "purpose": "Action states; press scale .97 over 100ms."
+      },
+      {
+        "name": "quiet-motion",
+        "value": "0ms",
+        "purpose": "All CSS and Motion transitions for keyboard input or reduced motion; reduced motion also removes animations and press transforms."
+      },
+      {
+        "name": "data",
+        "value": "none",
+        "purpose": "No incoming metric value, chart geometry, or row animation."
+      },
+      {
+        "name": "control-popup",
+        "value": "opacity 120ms cubic-bezier(0.23, 1, 0.32, 1), transform 120ms cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "Popup starting/ending opacity 0 and translateY(-3px) scale(.98)."
+      },
+      {
+        "name": "initial-skeleton",
+        "value": "1400ms ease-in-out infinite; 50% opacity .45",
+        "purpose": "Initial metric and section placeholders; reduced motion disables animation."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "wide-min",
+        "value": "1700px"
+      },
+      {
+        "name": "compact-desktop-max",
+        "value": "1200px"
+      },
+      {
+        "name": "horizontal-navigation-max",
+        "value": "900px"
+      },
+      {
+        "name": "mobile-max",
+        "value": "600px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Solid charcoal base with a constant translucent gradient; hover transitions only the base color without flashing.",
+      "html": "<button class=\"ds-primary\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 6h16M7 12h10M10 18h4\"/></svg>Apply filters</button>",
+      "css": ".ds-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:38px;padding:9px 14px;border:0;border-radius:9px;background-color:#292928;background-image:linear-gradient(180deg,#ffffff12,#ffffff00);box-shadow:inset 0 1px 0 #ffffff24,0 1px 2px #00000026,0 0 0 1px #262625;color:#fff;font:500 12px/1.5 'Inter Variable',sans-serif;cursor:pointer;white-space:nowrap;transition:background-color 160ms ease,color 160ms ease,transform 140ms cubic-bezier(.23,1,.32,1),box-shadow 160ms ease}.ds-primary:hover:not(:disabled){background-color:#414140}.ds-primary:active:not(:disabled){transform:scale(.97);transition-duration:100ms}.ds-primary:focus-visible{outline:3px solid #0071e3;outline-offset:3px}.ds-primary:disabled{opacity:.48;cursor:wait}@media(max-width:600px){.ds-primary{min-height:44px}}@media(prefers-reduced-motion:reduce){.ds-primary{transition-duration:0ms}.ds-primary:active:not(:disabled){transform:none}}"
+    },
+    {
+      "name": "Secondary Action",
+      "kind": "button",
+      "description": "White layered refresh, download, and close actions.",
+      "html": "<button class=\"ds-secondary\">Refresh</button>",
+      "css": ".ds-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:38px;padding:9px 14px;border:0;border-radius:9px;background:linear-gradient(180deg,#fff,#fbfbfa);color:#484845;box-shadow:inset 0 1px 0 #fff,0 1px 2px #0000000a,0 0 0 1px #e2e2df;font:500 12px/1.5 'Inter Variable',sans-serif;cursor:pointer;transition:background-color 160ms ease,transform 140ms cubic-bezier(.23,1,.32,1),box-shadow 160ms ease}.ds-secondary:hover:not(:disabled){background:#f3f3f1;box-shadow:inset 0 1px 0 #fff,0 1px 3px #00000012,0 0 0 1px #d4d4d0}.ds-secondary:active:not(:disabled){transform:scale(.97);transition-duration:100ms}.ds-secondary:focus-visible{outline:3px solid #0071e3;outline-offset:3px}.ds-secondary:disabled{opacity:.48;cursor:wait}@media(max-width:600px){.ds-secondary{min-height:44px}}@media(prefers-reduced-motion:reduce){.ds-secondary{transition-duration:0ms}.ds-secondary:active:not(:disabled){transform:none}}"
+    },
+    {
+      "name": "Filter Field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Warm field with a visible label and subtle blue focus halo.",
+      "html": "<label class=\"ds-label\">Run ID<input class=\"ds-field\" placeholder=\"Filter by run ID\"/></label>",
+      "css": ".ds-label{display:flex;flex-direction:column;gap:9px;min-width:0;color:#6b6b66;font:450 12px/1.5 'Inter Variable',sans-serif;letter-spacing:-.01em}.ds-field{width:100%;min-width:0;min-height:38px;border:1px solid #e2e2df;border-radius:8px;background:#fafaf9;color:#363633;padding:8px 11px;font:400 12px/1.5 'Inter Variable',sans-serif;caret-color:var(--accent,#436bd8);box-shadow:inset 0 1px 2px #00000003;transition:border-color 150ms ease,background-color 150ms ease,box-shadow 150ms ease}.ds-field::placeholder{color:#71716b;opacity:1}.ds-field:hover{border-color:#c6c6c0}.ds-field:focus-visible{outline:0;border-color:#94a9dc;background:#fff;box-shadow:0 0 0 3px #436bd812}@media(max-width:600px){.ds-field{min-height:44px;font-size:16px}}@media(prefers-reduced-motion:reduce){.ds-field{transition-duration:0ms}}"
+    },
+    {
+      "name": "Data Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "White 16px panel with a fine edge and shallow depth.",
+      "html": "<section class=\"ds-panel\"><div class=\"ds-heading\"><h2>Traces</h2><span>Run history</span></div><div class=\"ds-empty\"><p>No traces found</p><span>Traces will appear here when runs match your filters.</span></div></section>",
+      "css": ".ds-panel{min-width:0;padding:24px;background:var(--surface,#fff);border-radius:var(--radius,16px);box-shadow:0 3px 6px #00000003,0 0 0 1px #e8e8e5;color:var(--ink,#242424);font-family:'Inter Variable',sans-serif;font-optical-sizing:auto}.ds-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;min-height:24px}.ds-heading h2{margin:0;font-size:15px;line-height:1.35;font-weight:550;letter-spacing:-.025em;overflow-wrap:anywhere}.ds-heading>span{color:var(--muted,#6b6b70);font-size:11px}.ds-empty{min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 16px;text-align:center}.ds-empty p{margin:0 0 6px;color:#4d4d48;font-size:13px;font-weight:500}.ds-empty span{color:var(--muted,#6b6b70);font-size:12px;max-width:36ch}@media(max-width:600px){.ds-panel{padding:18px 16px}.ds-heading{gap:10px}.ds-heading>span{font-size:10px}}"
+    },
+    {
+      "name": "Successful Status",
+      "kind": "chip",
+      "refersTo": "status-success",
+      "description": "Read-only status with a visible label and current-color dot.",
+      "html": "<span class=\"ds-status\">Successful</span>",
+      "css": ".ds-status{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;font:450 10px/1.5 'Inter Variable',sans-serif;border-radius:6px;white-space:nowrap;background:#f0f7f1;color:#30734a}.ds-status::before{content:'';width:4px;height:4px;background:currentColor;border-radius:50%}"
+    },
+    {
+      "name": "Navigation Selection",
+      "kind": "nav",
+      "description": "Sliding neutral selection; runtime section scroll uses an interruptible 280ms ease-out, instant for keyboard activation and reduced motion.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Dashboard sections\"><a href=\"#dashboard\" aria-current=\"location\">Overview</a><a href=\"#traces\">Traces</a></nav>",
+      "css": ".ds-nav{display:flex;flex-direction:column;gap:6px;padding:8px;background:#f3f3f1;font-family:'Inter Variable',sans-serif}.ds-nav a{display:flex;align-items:center;gap:11px;padding:11px 13px;min-height:42px;border-radius:9px;text-decoration:none;font-size:13px;line-height:1.5;font-weight:450;color:#6b6b68}.ds-nav a[aria-current]{color:#2a2a28;font-weight:500;background:#fff;box-shadow:0 1px 3px #00000007,0 0 0 1px #00000005}.ds-nav a:hover{color:var(--ink,#242424)}.ds-nav a:not([aria-current]):hover{background:#eaeae6}.ds-nav a:focus-visible{outline:3px solid #0071e3;outline-offset:3px}@media(max-width:900px){.ds-nav{flex-direction:row;overflow-x:auto;gap:4px}.ds-nav a{padding:9px 12px;white-space:nowrap;font-size:12px}}@media(max-width:600px){.ds-nav a{min-height:44px}}"
+    },
+    {
+      "name": "Dashboard Select",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Base UI select: keyboard navigation and focus return, warm trigger, highlighted options, blue selected check. Static open-state preview.",
+      "html": "<div class=\"ds-control-demo\"><div class=\"ds-field-control\"><label class=\"ds-field-label\" id=\"ds-status-label\">Status</label><button class=\"ds-control-trigger\" aria-labelledby=\"ds-status-label\" aria-haspopup=\"listbox\" aria-expanded=\"true\" data-popup-open><span>All statuses</span><svg class=\"ds-control-icon ds-chevron\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m7 10 5 5 5-5\"/></svg></button></div><div class=\"ds-select-popup\"><div class=\"ds-select-options\" role=\"listbox\" aria-label=\"Status\"><div class=\"ds-select-option\" role=\"option\" aria-selected=\"true\" data-selected><span>All statuses</span><span class=\"ds-select-check\"><svg class=\"ds-control-icon\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m5 12 4 4L19 6\"/></svg></span></div><div class=\"ds-select-option\" role=\"option\" aria-selected=\"false\" data-highlighted><span>Successful</span></div><div class=\"ds-select-option\" role=\"option\" aria-selected=\"false\"><span>Failed</span></div></div></div></div>",
+      "css": ".ds-control-demo{font:400 12px/1.5 \"Inter Variable\",sans-serif;color:var(--ink,#242424)}.ds-field-control { display: flex; flex-direction: column; gap: 9px; min-width: 0; }\n.ds-field-label { color: #6b6b66; font-size: 12px; font-weight: 450; letter-spacing: -.01em; line-height: 18px; }\n.ds-control-trigger { width: 100%; min-width: 0; min-height: 38px; justify-content: space-between; padding: 8px 11px; border: 1px solid #e2e2df; border-radius: 8px; background: #fafaf9; color: #363633; box-shadow: inset 0 1px 2px #00000003; font-size: 12px; font-weight: 400; text-align: left; transition: border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease; }\n.ds-control-trigger>span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }\n.ds-control-trigger:hover:not(:disabled) { background: #f5f5f3; border-color: #c6c6c0; }\n.ds-control-trigger:active:not(:disabled) { transform: none; }\n.ds-control-trigger[data-popup-open], .ds-control-trigger:focus-visible { background: #fff; border-color: #94a9dc; box-shadow: 0 0 0 3px #436bd812; outline: none; }\n.ds-control-icon { display: block; flex: 0 0 auto; color: #777772; }\n.ds-control-icon.ds-chevron { width: 14px; height: 14px; }\n.ds-control-trigger[data-popup-open] .ds-control-icon.ds-chevron { transform: rotate(180deg); }\n.ds-control-positioner { z-index: 20; outline: none; }\n.ds-select-popup, .ds-calendar-popup { background: #fffffff7; backdrop-filter: blur(16px); border-radius: 12px; color: var(--ink,#242424); box-shadow: 0 8px 32px #00000016, 0 2px 6px #00000008, 0 0 0 1px #0000000b; transform-origin: var(--transform-origin); transition: opacity 120ms cubic-bezier(.23,1,.32,1), transform 120ms cubic-bezier(.23,1,.32,1); }\n.ds-select-popup[data-starting-style], .ds-calendar-popup[data-starting-style], .ds-select-popup[data-ending-style], .ds-calendar-popup[data-ending-style] { opacity: 0; transform: translateY(-3px) scale(.98); }\n.ds-select-popup { min-width: var(--anchor-width); width: max-content; max-width: calc(100vw - 24px); padding: 5px; }\n.ds-select-options { max-height: min(340px, var(--available-height, 340px)); overflow: auto; outline: none; }\n.ds-select-option { display: grid; grid-template-columns: 1fr 16px; align-items: center; gap: 16px; padding: 9px 10px; min-height: 36px; border-radius: 7px; font-size: 12px; cursor: default; user-select: none; outline: none; scroll-margin-block: 5px; }\n.ds-select-option[data-highlighted] { background: #efefec; }\n.ds-select-option[data-selected] { color: #242424; font-weight: 500; }\n.ds-select-check .ds-control-icon { color: #436bd8; width: 14px; height: 14px; }\n.ds-date-trigger { justify-content: flex-start; color: #71716b; }\n.ds-date-trigger.ds-has-date { color: #363633; }\n.ds-date-trigger>.ds-control-icon.ds-chevron { margin-left: auto; }\n.ds-date-trigger>span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }\n.ds-calendar-popup { width: 286px; max-width: calc(100vw - 24px); padding: 14px; }\n.ds-calendar-title { margin: 0 0 12px; padding: 0 3px 12px; border-bottom: 1px solid #eee; color: #6b6b66; font-size: 11px; font-weight: 450; letter-spacing: 0; }\n.ds-calendar { --rdp-accent-color: #292928; --rdp-accent-background-color: #f0f1f4; --day-size: 36px; --rdp-day-width: var(--day-size); --rdp-day-height: var(--day-size); --rdp-day_button-width: calc(var(--day-size) - 2px); --rdp-day_button-height: calc(var(--day-size) - 2px); --rdp-day_button-border-radius: 8px; --rdp-selected-border: none; --rdp-nav_button-width: 28px; --rdp-nav_button-height: 28px; --rdp-nav-height: 36px; --rdp-outside-opacity: .45; --rdp-disabled-opacity: .3; font-size: 12px; }\n.ds-calendar .ds-rdp-months { justify-content: center; width: 100%; }\n.ds-calendar .ds-rdp-month { width: 100%; }\n.ds-calendar .ds-rdp-month_caption { height: 36px; margin-bottom: 10px; }\n.ds-calendar .ds-rdp-caption_label { font-size: 13px; font-weight: 550; letter-spacing: -.025em; }\n.ds-calendar table { border-collapse: collapse; width: 100%; white-space: normal; }\n.ds-calendar th, .ds-calendar td { border: 0; padding: 0; text-align: center; background: transparent; }\n.ds-calendar thead th { position: static; }\n.ds-calendar .ds-rdp-weekday { height: 30px; color: #71716b; font-size: 10px; font-weight: 400; opacity: 1; }\n.ds-calendar tbody tr, .ds-calendar tbody tr:hover { background: transparent; cursor: default; }\n.ds-calendar button { min-height: 0; padding: 0; gap: 0; background: transparent; border: 0; color: #363633; box-shadow: none; font-size: 12px; font-weight: 400; }\n.ds-calendar button:hover:not(:disabled) { background: #eeefeb; }\n.ds-calendar button:active:not(:disabled) { transform: none; }\n.ds-calendar .ds-rdp-selected { font-size: 12px; font-weight: 500; }\n.ds-calendar .ds-rdp-selected .ds-rdp-day_button, .ds-calendar .ds-rdp-selected .ds-rdp-day_button:hover { background: #292928; color: #fff; }\n.ds-calendar .ds-rdp-today:not(.ds-rdp-selected) .ds-rdp-day_button { color: #436bd8; font-weight: 650; background: #f0f3fc; }\n.ds-calendar .ds-rdp-chevron { width: 15px; height: 15px; fill: #6b6b66; }\n.ds-calendar button:disabled { cursor: not-allowed; }\n.ds-calendar-footer { display: flex; justify-content: space-between; margin-top: 12px; padding-top: 10px; border-top: 1px solid #eee; }\n.ds-calendar-action { padding: 5px 8px; min-height: 30px; background: transparent; color: #63635e; box-shadow: none; font-size: 11px; }\n.ds-calendar-action:hover:not(:disabled) { background: #f0f0ed; color: #242424; }\n.ds-calendar-action:disabled { cursor: default; }.ds-control-trigger{display:inline-flex;align-items:center;gap:8px;cursor:pointer}.ds-control-trigger:focus-visible,.ds-calendar button:focus-visible,.ds-calendar-action:focus-visible{outline:3px solid #0071e3;outline-offset:3px}.ds-control-trigger:focus-visible{outline:none}.ds-select-popup,.ds-calendar-popup{margin-top:7px}.ds-calendar button{cursor:pointer;border-radius:8px}.ds-calendar-action{border:0;border-radius:9px;cursor:pointer}.ds-calendar-action:disabled{opacity:.48}@media(max-width:600px){.ds-control-trigger{min-height:44px;font-size:13px}.ds-select-option{min-height:44px;font-size:13px}.ds-calendar-popup{width:min(330px,calc(100vw - 24px))}.ds-calendar{--day-size:calc((min(330px,100vw - 24px) - 28px)/7);--rdp-nav_button-width:40px;--rdp-nav_button-height:40px;--rdp-nav-height:44px}.ds-calendar .ds-rdp-month_caption{height:44px}.ds-calendar-action{min-height:40px}.ds-calendar-title{font-size:12px}}@media(prefers-reduced-transparency:reduce){.ds-select-popup,.ds-calendar-popup{background:#fff;backdrop-filter:none}}@media(prefers-contrast:more){.ds-control-trigger{border-color:#62626b}.ds-select-popup,.ds-calendar-popup{background:#fff;outline:1px solid #62626b}}@media(prefers-reduced-motion:reduce){.ds-control-demo *{transition-duration:0ms!important}}"
+    },
+    {
+      "name": "Date Calendar",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Base UI popover and react-day-picker with linked From/To bounds, local YYYY-MM-DD values, arrow-key day navigation, initial calendar focus, and trigger focus return. Static open-state style preview.",
+      "html": "<div class=\"ds-control-demo\"><div class=\"ds-field-control\"><span class=\"ds-field-label\" id=\"ds-from-label\">From</span><button class=\"ds-control-trigger ds-date-trigger ds-has-date\" aria-labelledby=\"ds-from-label\" aria-haspopup=\"dialog\" aria-expanded=\"true\" data-popup-open><span>22 Oct 2026</span><svg class=\"ds-control-icon ds-chevron\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m7 10 5 5 5-5\"/></svg></button></div><div class=\"ds-calendar-popup\" role=\"dialog\" aria-label=\"From date\"><h2 class=\"ds-calendar-title\">From date</h2><div class=\"ds-calendar\"><div class=\"ds-rdp-month\"><div class=\"ds-rdp-month_caption\"><span class=\"ds-rdp-caption_label\">October 2026</span></div><table><thead><tr><th class=\"ds-rdp-weekday\" scope=\"col\">Su</th><th class=\"ds-rdp-weekday\" scope=\"col\">Mo</th><th class=\"ds-rdp-weekday\" scope=\"col\">Tu</th><th class=\"ds-rdp-weekday\" scope=\"col\">We</th><th class=\"ds-rdp-weekday\" scope=\"col\">Th</th><th class=\"ds-rdp-weekday\" scope=\"col\">Fr</th><th class=\"ds-rdp-weekday\" scope=\"col\">Sa</th></tr></thead><tbody><tr><td class=\"\" style=\"opacity:.45\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-09-27\">27</button></td><td class=\"\" style=\"opacity:.45\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-09-28\">28</button></td><td class=\"\" style=\"opacity:.45\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-09-29\">29</button></td><td class=\"\" style=\"opacity:.45\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-09-30\">30</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-01\">1</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-02\">2</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-03\">3</button></td></tr><tr><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-04\">4</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-05\">5</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-06\">6</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-07\">7</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-08\">8</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-09\">9</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-10\">10</button></td></tr><tr><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-11\">11</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-12\">12</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-13\">13</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-14\">14</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-15\">15</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-16\">16</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-17\">17</button></td></tr><tr><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-18\">18</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-19\">19</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-20\">20</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-21\">21</button></td><td class=\"ds-rdp-selected\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-22\" aria-pressed=\"true\">22</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-23\">23</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-24\">24</button></td></tr><tr><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-25\">25</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-26\">26</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-27\">27</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-28\">28</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-29\">29</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-30\">30</button></td><td class=\"\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-10-31\">31</button></td></tr><tr><td class=\"\" style=\"opacity:.45\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-11-01\">1</button></td><td class=\"\" style=\"opacity:.45\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-11-02\">2</button></td><td class=\"\" style=\"opacity:.45\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-11-03\">3</button></td><td class=\"\" style=\"opacity:.45\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-11-04\">4</button></td><td class=\"\" style=\"opacity:.45\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-11-05\">5</button></td><td class=\"\" style=\"opacity:.45\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-11-06\">6</button></td><td class=\"\" style=\"opacity:.45\"><button class=\"ds-rdp-day_button\" style=\"width:calc(var(--day-size) - 2px);height:calc(var(--day-size) - 2px)\" aria-label=\"2026-11-07\">7</button></td></tr></tbody></table></div></div><div class=\"ds-calendar-footer\"><button class=\"ds-calendar-action\">Clear</button><button class=\"ds-calendar-action\">Today</button></div></div></div>",
+      "css": ".ds-control-demo{font:400 12px/1.5 \"Inter Variable\",sans-serif;color:var(--ink,#242424)}.ds-field-control { display: flex; flex-direction: column; gap: 9px; min-width: 0; }\n.ds-field-label { color: #6b6b66; font-size: 12px; font-weight: 450; letter-spacing: -.01em; line-height: 18px; }\n.ds-control-trigger { width: 100%; min-width: 0; min-height: 38px; justify-content: space-between; padding: 8px 11px; border: 1px solid #e2e2df; border-radius: 8px; background: #fafaf9; color: #363633; box-shadow: inset 0 1px 2px #00000003; font-size: 12px; font-weight: 400; text-align: left; transition: border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease; }\n.ds-control-trigger>span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }\n.ds-control-trigger:hover:not(:disabled) { background: #f5f5f3; border-color: #c6c6c0; }\n.ds-control-trigger:active:not(:disabled) { transform: none; }\n.ds-control-trigger[data-popup-open], .ds-control-trigger:focus-visible { background: #fff; border-color: #94a9dc; box-shadow: 0 0 0 3px #436bd812; outline: none; }\n.ds-control-icon { display: block; flex: 0 0 auto; color: #777772; }\n.ds-control-icon.ds-chevron { width: 14px; height: 14px; }\n.ds-control-trigger[data-popup-open] .ds-control-icon.ds-chevron { transform: rotate(180deg); }\n.ds-control-positioner { z-index: 20; outline: none; }\n.ds-select-popup, .ds-calendar-popup { background: #fffffff7; backdrop-filter: blur(16px); border-radius: 12px; color: var(--ink,#242424); box-shadow: 0 8px 32px #00000016, 0 2px 6px #00000008, 0 0 0 1px #0000000b; transform-origin: var(--transform-origin); transition: opacity 120ms cubic-bezier(.23,1,.32,1), transform 120ms cubic-bezier(.23,1,.32,1); }\n.ds-select-popup[data-starting-style], .ds-calendar-popup[data-starting-style], .ds-select-popup[data-ending-style], .ds-calendar-popup[data-ending-style] { opacity: 0; transform: translateY(-3px) scale(.98); }\n.ds-select-popup { min-width: var(--anchor-width); width: max-content; max-width: calc(100vw - 24px); padding: 5px; }\n.ds-select-options { max-height: min(340px, var(--available-height, 340px)); overflow: auto; outline: none; }\n.ds-select-option { display: grid; grid-template-columns: 1fr 16px; align-items: center; gap: 16px; padding: 9px 10px; min-height: 36px; border-radius: 7px; font-size: 12px; cursor: default; user-select: none; outline: none; scroll-margin-block: 5px; }\n.ds-select-option[data-highlighted] { background: #efefec; }\n.ds-select-option[data-selected] { color: #242424; font-weight: 500; }\n.ds-select-check .ds-control-icon { color: #436bd8; width: 14px; height: 14px; }\n.ds-date-trigger { justify-content: flex-start; color: #71716b; }\n.ds-date-trigger.ds-has-date { color: #363633; }\n.ds-date-trigger>.ds-control-icon.ds-chevron { margin-left: auto; }\n.ds-date-trigger>span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }\n.ds-calendar-popup { width: 286px; max-width: calc(100vw - 24px); padding: 14px; }\n.ds-calendar-title { margin: 0 0 12px; padding: 0 3px 12px; border-bottom: 1px solid #eee; color: #6b6b66; font-size: 11px; font-weight: 450; letter-spacing: 0; }\n.ds-calendar { --rdp-accent-color: #292928; --rdp-accent-background-color: #f0f1f4; --day-size: 36px; --rdp-day-width: var(--day-size); --rdp-day-height: var(--day-size); --rdp-day_button-width: calc(var(--day-size) - 2px); --rdp-day_button-height: calc(var(--day-size) - 2px); --rdp-day_button-border-radius: 8px; --rdp-selected-border: none; --rdp-nav_button-width: 28px; --rdp-nav_button-height: 28px; --rdp-nav-height: 36px; --rdp-outside-opacity: .45; --rdp-disabled-opacity: .3; font-size: 12px; }\n.ds-calendar .ds-rdp-months { justify-content: center; width: 100%; }\n.ds-calendar .ds-rdp-month { width: 100%; }\n.ds-calendar .ds-rdp-month_caption { height: 36px; margin-bottom: 10px; }\n.ds-calendar .ds-rdp-caption_label { font-size: 13px; font-weight: 550; letter-spacing: -.025em; }\n.ds-calendar table { border-collapse: collapse; width: 100%; white-space: normal; }\n.ds-calendar th, .ds-calendar td { border: 0; padding: 0; text-align: center; background: transparent; }\n.ds-calendar thead th { position: static; }\n.ds-calendar .ds-rdp-weekday { height: 30px; color: #71716b; font-size: 10px; font-weight: 400; opacity: 1; }\n.ds-calendar tbody tr, .ds-calendar tbody tr:hover { background: transparent; cursor: default; }\n.ds-calendar button { min-height: 0; padding: 0; gap: 0; background: transparent; border: 0; color: #363633; box-shadow: none; font-size: 12px; font-weight: 400; }\n.ds-calendar button:hover:not(:disabled) { background: #eeefeb; }\n.ds-calendar button:active:not(:disabled) { transform: none; }\n.ds-calendar .ds-rdp-selected { font-size: 12px; font-weight: 500; }\n.ds-calendar .ds-rdp-selected .ds-rdp-day_button, .ds-calendar .ds-rdp-selected .ds-rdp-day_button:hover { background: #292928; color: #fff; }\n.ds-calendar .ds-rdp-today:not(.ds-rdp-selected) .ds-rdp-day_button { color: #436bd8; font-weight: 650; background: #f0f3fc; }\n.ds-calendar .ds-rdp-chevron { width: 15px; height: 15px; fill: #6b6b66; }\n.ds-calendar button:disabled { cursor: not-allowed; }\n.ds-calendar-footer { display: flex; justify-content: space-between; margin-top: 12px; padding-top: 10px; border-top: 1px solid #eee; }\n.ds-calendar-action { padding: 5px 8px; min-height: 30px; background: transparent; color: #63635e; box-shadow: none; font-size: 11px; }\n.ds-calendar-action:hover:not(:disabled) { background: #f0f0ed; color: #242424; }\n.ds-calendar-action:disabled { cursor: default; }.ds-control-trigger{display:inline-flex;align-items:center;gap:8px;cursor:pointer}.ds-control-trigger:focus-visible,.ds-calendar button:focus-visible,.ds-calendar-action:focus-visible{outline:3px solid #0071e3;outline-offset:3px}.ds-control-trigger:focus-visible{outline:none}.ds-select-popup,.ds-calendar-popup{margin-top:7px}.ds-calendar button{cursor:pointer;border-radius:8px}.ds-calendar-action{border:0;border-radius:9px;cursor:pointer}.ds-calendar-action:disabled{opacity:.48}@media(max-width:600px){.ds-control-trigger{min-height:44px;font-size:13px}.ds-select-option{min-height:44px;font-size:13px}.ds-calendar-popup{width:min(330px,calc(100vw - 24px))}.ds-calendar{--day-size:calc((min(330px,100vw - 24px) - 28px)/7);--rdp-nav_button-width:40px;--rdp-nav_button-height:40px;--rdp-nav-height:44px}.ds-calendar .ds-rdp-month_caption{height:44px}.ds-calendar-action{min-height:40px}.ds-calendar-title{font-size:12px}}@media(prefers-reduced-transparency:reduce){.ds-select-popup,.ds-calendar-popup{background:#fff;backdrop-filter:none}}@media(prefers-contrast:more){.ds-control-trigger{border-color:#62626b}.ds-select-popup,.ds-calendar-popup{background:#fff;outline:1px solid #62626b}}@media(prefers-reduced-motion:reduce){.ds-control-demo *{transition-duration:0ms!important}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Quiet, fitted interface craft",
+    "overview": "An Emil-inspired telemetry workspace with warm near-white surfaces, optical Inter, fine neutral edges, layered charcoal actions, and purposeful state motion. The accepted dashboard structure remains; the previous Apple-led visual direction is superseded. Data stays still while user-initiated changes receive brief, zero-bounce feedback.",
+    "keyCharacteristics": [
+      "Optically sized Inter Variable and tabular figures",
+      "Warm neutrals and shallow surface depth",
+      "Layered charcoal actions and pale neutral navigation",
+      "Measured collapses and brief label feedback",
+      "Independent section loading with explicit stale/error status"
+    ],
+    "rules": [
+      {
+        "name": "State motion",
+        "body": "Animate user-initiated state changes; never animate incoming telemetry or chart geometry. Initial skeletons breathe unless reduced motion is requested.",
+        "section": "components"
+      },
+      {
+        "name": "Honest refresh",
+        "body": "Keep results on same-query refresh with updating and stale/error status; clear results for changed queries. Protect trace requests from late responses.",
+        "section": "components"
+      },
+      {
+        "name": "Quiet input",
+        "body": "Keyboard input and reduced motion set CSS and Motion transitions to zero. Hidden collapses stay inert and aria-hidden.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do use optical Inter, aligned numbers, neutral selection, and layered action recipes.",
+      "Do retain full-height mobile trace lists with horizontal scrolling, visible focus, and independent section states.",
+      "Do keep metric supporting labels and chart dates at 10px, with failed counts at 11px on mobile."
+    ],
+    "donts": [
+      "Don't reintroduce blue filled primary actions or an Apple-led visual direction.",
+      "Don't animate incoming data or chart geometry.",
+      "Don't present stale results as current or allow late trace responses to reopen dismissed details."
+    ]
+  }
+}
