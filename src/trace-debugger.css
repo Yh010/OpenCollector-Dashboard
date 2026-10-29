@@ -1,0 +1,73 @@
+.trace-story { container-type: inline-size; color: #353832; }
+.story-summary { display: grid; gap: 18px; padding-bottom: 22px; border-bottom: 1px solid #e5e7e0; }
+.story-summary h3 { color: #62685c; font-size: 11px; font-weight: 500; margin: 0 0 5px; }
+.story-text p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; line-height: 1.75; }
+.story-summary .story-text p { font-size: 13px; }
+button.story-text-toggle { min-height: 30px; padding: 4px 0; color: #456340; background: transparent; box-shadow: none; font-size: 11px; transform: none; }
+.story-toolbar { display: flex; gap: 16px; align-items: center; justify-content: space-between; margin: 22px 0 18px; }
+.story-toolbar>div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; }
+.story-toolbar h2 { font-size: 16px; }
+.story-toolbar span { color: #676e60; font-size: 11px; font-variant-numeric: tabular-nums; }
+.story-waterfall { overflow-x: auto; }
+.story-grid { min-width: 570px; }
+.story-axis, .story-row { display: grid; grid-template-columns: minmax(265px, 1.4fr) 64px minmax(150px, 1fr); gap: 12px; align-items: center; }
+.story-axis { color: #676e60; font-size: 10px; padding: 0 10px 10px; }
+.story-axis>div { display: flex; justify-content: space-between; font-variant-numeric: tabular-nums; }
+.story-operation { border-top: 1px solid #e8eae3; }
+.story-operation:last-child { border-bottom: 1px solid #e8eae3; }
+.story-row { min-height: 67px; padding: 5px 10px; border-radius: 7px; }
+.story-operation[data-open=true]>.story-row { background: #edf2e9; }
+.story-step-cell { display: flex; min-width: 0; align-items: center; }
+button.story-step { display: flex; gap: 9px; width: 100%; text-align: left; min-width: 0; padding: 8px 0; background: transparent; color: #353832; box-shadow: none; border-radius: 5px; white-space: normal; transform: none; }
+button.story-step:hover { color: #2c5225; }
+.story-step-number { flex: 0 0 16px; color: #65775c; font-size: 11px; font-variant-numeric: tabular-nums; }
+.story-step>span:nth-child(2) { min-width: 0; flex: 1; }
+.story-step b { font-size: 12px; font-weight: 550; }
+.story-step-action { display: block; font-size: 11px; color: #62695b; margin-top: 3px; line-height: 1.5; }
+.story-step-status { display: block; margin-top: 3px; color: #973e32; font-size: 10px; }
+.story-step-disclosure { font-size: 15px; color: #687960; padding: 0 5px; }
+button.story-branch { background: transparent; box-shadow: none; color: #67745e; padding: 5px; min-height: 30px; flex-shrink: 0; transform: none; }
+.story-duration { font-size: 11px; color: #62695b; font-variant-numeric: tabular-nums; }
+.story-bar-track { position: relative; height: 22px; background: linear-gradient(90deg, #e9ece4 1px, transparent 1px); background-size: 50% 100%; }
+.story-bar-track i { position: absolute; top: 5px; height: 12px; background: #9caf93; border-radius: 3px; }
+.story-bar-track i.has-issue { background: #c3917f; }
+.story-detail { margin: 0 0 14px; max-width: 100cqw; padding: 16px; border: 1px solid #d8e1d0; border-radius: 8px; background: #fbfcf9; }
+.story-detail>h3 { font-size: 12px; font-weight: 550; color: #405638; padding-bottom: 14px; margin: 0 0 2px; border-bottom: 1px solid #e2e8db; }
+.story-evidence-section { padding: 14px 0; }
+.story-evidence-section+.story-evidence-section { border-top: 1px solid #e7eae2; }
+.story-evidence-section>h4 { font-size: 11px; font-weight: 600; color: #56684b; margin: 0 0 8px; }
+.story-call>h4 { font-size: 12px; margin: 16px 0 0; color: #4d5e43; }
+.story-call>h4>span { font-weight: 400; color: #687261; margin-left: 8px; }
+.story-note { font-size: 11px; color: #68715f; margin: 6px 0; line-height: 1.6; }
+.story-feedback { margin-top: 12px; }
+.story-feedback>span { display: block; font-size: 10px; color: #68715f; margin-bottom: 4px; }
+.story-context { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 9px; font-size: 11px; color: #55644b; }
+.story-action-label { margin: 0 0 8px; font-size: 12px; }
+.story-arguments { margin: 0; }
+.story-arguments>div { display: grid; grid-template-columns: 62px minmax(0,1fr); gap: 10px; margin-top: 8px; }
+.story-arguments dt { font-size: 11px; color: #65705c; padding-top: 2px; }
+.story-arguments dd { margin: 0; min-width: 0; }
+.story-result-error { background: #fcf0eb; color: #8d3b2d; padding: 11px 12px; border-radius: 7px; margin: 8px 0; }
+.story-result-error>b, .story-tool-result>b { display: block; font-size: 11px; margin-bottom: 6px; }
+.story-result-error .story-note { color: #8d5144; }
+.story-tool-result { margin: 8px 0; }
+.story-questions { margin: 0; padding-left: 18px; }
+.story-disclosure { margin-top: 12px; border-top: 1px solid #e6e9e0; padding-top: 10px; }
+.story-disclosure>summary { font-size: 11px; color: #626d59; cursor: pointer; overflow-wrap: anywhere; }
+.story-disclosure pre { font: 11px/1.7 Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 360px; overflow: auto; background: #f3f5ef; color: #41483b; padding: 12px; border-radius: 6px; }
+.story-span-anchor { display: block; height: 0; }
+.story-ai { border-top: 1px solid #e6e9e0; margin-top: 20px; padding-top: 14px; }
+.story-ai>summary { font-size: 12px; cursor: pointer; color: #5c6752; }
+.story-call-origin, .story-call-next { padding: 12px 0; font-size: 12px; line-height: 1.7; }
+.story-call-origin>span, .story-call-next>span, .story-citations>span { display: block; color: #56684b; font-size: 11px; font-weight: 600; margin-bottom: 5px; }
+.story-call-origin p, .story-call-next p { margin: 0; }
+.story-call-origin { border-bottom: 1px solid #e7eae2; }
+.story-call-next { margin-top: 14px; border-top: 1px solid #dce5d5; }
+.story-citations { margin-top: 14px; }
+.story-citations>div { margin-top: 8px; }
+.story-action-reason { margin: 10px 0 12px; font-size: 12px; line-height: 1.7; }
+.story-action-reason>span { display: block; margin-bottom: 4px; color: #56684b; font-size: 11px; font-weight: 600; }
+.story-action-reason p { margin: 0; }
+.story-call-next[data-failure=true]>span { color: #8d3b2d; }
+.story-call-next p+p { margin-top: 8px; }
+@media(max-width: 600px) { .story-summary { gap: 16px; } .story-detail { padding: 12px; } button.story-text-toggle { min-height: 44px; } button.story-branch { min-width: 44px; min-height: 44px; } button.story-step { min-height: 52px; } .story-disclosure>summary { min-height: 32px; } }

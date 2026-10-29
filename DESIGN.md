@@ -168,3 +168,36 @@ Input-mode attributes and React keyboard state update only when the mode changes
 - Waterfalls provide a five-tick elapsed-time ruler, hover/focus timing details, and individually collapsible branches. Copy nested trace is a secondary action. Data geometry never animates on arrival.
 
 Small state transitions: Custom date fields enter with a 150ms ease-out opacity/3px translate transition. The pending-filter status reserves its layout slot and fades over 120ms; its hidden Reset action is inert and aria-hidden. Copy-ID glyphs occupy the same 12px box and crossfade over 120ms. Keyboard input remains instant. Reduced motion uses 80ms opacity-only transitions. Browser frame samples verified intermediate opacity/translation, unchanged metric position, successful clipboard content, hidden Reset inertness, and no document overflow at 390px.
+## Trace cursor pagination
+
+The trace table displays 50 rows per page. Previous/Next replace the visible rows, with a live range/count announcement and disabled boundary/loading states. Page changes use the applied query without refetching charts or cards; drafts are unaffected. Applying or refreshing resets the traversal. Failed page loads leave the previous page visible with a retryable error. The trace inspector navigates only runs on the current page and closes after a successful page change. On narrow screens the pagination buttons share a full-width row and retain 44px touch targets.
+
+The trace footer offers 25, 50 (default), 100, and 200 traces per page. Changing size fetches page 1 using applied filters, replaces the rows, and clears the old cursor history only after success. A failed size change retains the previous size and page. Cards/charts are not refetched. The chosen size persists through filter changes and Refresh during the current session.
+
+
+The header includes one Optimizations switch beside Refresh. It defaults on; off is encoded in the page URL for repeatable local comparisons. Changing it reloads the page and resets filters/page/inspector. Off mode shows all matching traces, hides pagination, and briefly explains the slower file-scanning behavior. It changes real read paths, with no simulated delays.
+
+Trace analysis is an on-demand button at the top of the inspector body. It shows a compact plain-text explanation, observations/possible causes, span-reference buttons, next checks, and limitations. Loading offers Cancel; errors offer retry using the same button. Switching or closing the inspector cancels its analysis. No extra page or automatic generation.
+
+AI trace analysis includes bounded recorded prompts, responses, tool payloads, task details and code excerpts. A collapsed “Context sent to AI” disclosure lists counts and sample redactions/truncations/omissions, including upstream capture limits. No extra page or settings are added.
+
+The inspector shows the recorded Final output first, above AI analysis and the event waterfall. It selects the latest run event containing nonempty finalOutput metadata and explicitly states when no output was recorded. AI results never replace or hide the recorded output.
+
+
+## Execution story inspector
+
+The original question, final recorded answer and elapsed run duration appear once. Long text uses Show more/Show less. One chronological waterfall row represents each meaningful operation: agent-step spans own only their direct generation children; standalone generations, tools and errors remain visible. The run is a summary rather than a duplicate row. Labels use the agent plus an action derived from recorded structured output. Failed task completion is never inferred from execution status.
+
+Numbered rows share a single timing axis and display their own span duration, without summing parent/child spans. Only genuine recorded ancestry causes indentation and branch controls. No connector lines. One detail is open at a time. Collapsing a parent closes its detail and descendants; reopening leaves descendants collapsed.
+
+Inline details present Input, Action and Result together, without tabs. Context counts appear only when the field was captured; missing and zero are distinct. Full sources, history, instructions, metadata and original spans are available through collapsed disclosures. Multiple calls appear as ordered call sections. Explicit tool rejections appear beside their recorded result; requests with no matching observation or span say Tool result not recorded. Missing/truncated data uses short field-level notes. Unknown structured responses remain accessible in Technical details.
+
+All raw events remain available under the trace-level Technical details and Copy trace. AI analysis is collapsed below the waterfall and does not run automatically. Existing capture policy and APIs are unchanged.
+
+Each detail starts with Why this call ran and ends with What OpenKode did next. New runtime records attach to the agent that owns them through explicit step identifiers; they do not become extra agent rows. Orphan records remain visible. Runtime routes, retry links and tool invocation facts are presented separately from model proposals. Historical routes that were never captured remain explicitly unknown. Matching corrections and tool observations in later captured inputs explain older retries without inventing delegation.
+
+Model research results are Proposed findings. Their source paths are Files cited by the model, with a note that citation alone does not prove a read. Zero supplied source files is visible. OpenKode's correction message is labeled What OpenKode told the agent before this call, alongside its origin. A blocked read explains the discovery allowlist and that ReadFileTool was not invoked; it does not imply an operating-system permission failure.
+
+Search actions explain the matching recorded runtime instruction next to the action. If no matching instruction was captured, the view says that the model's reason was not explicitly recorded. NO_MATCHES means the search completed without a matching path; it must not appear as Returned or imply that GlobTool crashed. A named-file search with an explicit stop event, or a matching terminal file-not-found response, explains Why the task stopped. For creation requests this calls out the mismatch between creating a new file and requiring an existing-file match. It states the absence of a recorded write rather than claiming any unrecorded side effect. Retried searches and unrelated final responses must not be described as terminal failures.
+
+Validation: node --experimental-strip-types --test tests/traceEvidence.test.mjs (Node 24+), TypeScript, production build, real failed trace and desktop/mobile interaction checks.

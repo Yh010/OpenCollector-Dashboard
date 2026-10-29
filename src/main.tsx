@@ -5,18 +5,21 @@ import { animate } from "motion";
 import "@fontsource-variable/inter/opsz.css";
 import { DashboardSelect, TimeRangePicker, TraceInspector } from "./DashboardControls";
 import "./styles.css";
+import { TraceAnalysis } from "./TraceAnalysis";
+import { TraceStory } from "./TraceDebugger";
 
+const optimizationsEnabled = new URLSearchParams(location.search).get("optimizations") !== "off";
 const api = import.meta.env.VITE_OPENCOLLECTOR_URL ?? "http://127.0.0.1:3000";
 type Run = { runId: string; startedAt: string; endedAt: string; durationMs: number; status: "ok" | "error"; spanCount: number };
 type Overview = { runCount: number; successCount: number; errorCount: number; spanCount: number; p50DurationMs: number; p95DurationMs: number };
 type TraceEvent = { eventId: string; runId: string; spanId: string; parentSpanId?: string; type: string; name: string; startedAt: string; endedAt: string; durationMs: number; status: string; metadata?: unknown; llm?: Record<string, unknown> };
-type TraceNode = { event: TraceEvent; children: TraceNode[] };
+type TracePage = { items: Run[]; total: number; limit: number; nextCursor: string | null; cursor: string | null };
 type Section = "overview" | "traces" | "spans" | "llm" | "series";
 type SectionStatus = "idle" | "loading" | "success" | "error";
 const initialSectionStates: Record<Section, SectionStatus> = { overview: "idle", traces: "idle", spans: "idle", llm: "idle", series: "idle" };
 
 function query(filters: Record<string, string>) { const params = new URLSearchParams(Object.entries(filters).filter(([, value]) => value)); return params.size ? `?${params}` : ""; }
-async function read<T>(path: string): Promise<T> { const response = await fetch(`${api}${path}`); if (!response.ok) throw new Error(await response.text()); return response.json() as Promise<T>; }
+async function read<T>(path: string): Promise<T> { const url = new URL(`${api}${path}`); if (!optimizationsEnabled) url.searchParams.set("optimizations", "off"); const response = await fetch(url); if (!response.ok) throw new Error(await response.text()); return response.json() as Promise<T>; }
 const duration = (value: number) => value >= 1000 ? `${(value / 1000).toFixed(2)}s` : `${value}ms`;
 const formatJson = (value: unknown) => JSON.stringify(value, null, 2) ?? "undefined";
 
@@ -160,6 +163,12 @@ function App() {
   const [overview, setOverview] = useState<Overview>();
   const [runs, setRuns] = useState<Run[]>([]);
   const [traceTotal, setTraceTotal] = useState(0);
+  const [tracePageSize, setTracePageSize] = useState(50);
+  const [traceCursors, setTraceCursors] = useState<Record<number, string | null>>({ 1: null });
+  const [tracePageNumber, setTracePageNumber] = useState(1);
+  const [jumpPage, setJumpPage] = useState("1");
+  const [nextTraceCursor, setNextTraceCursor] = useState<string | null>(null);
+  const [pageError, setPageError] = useState("");
   const [spans, setSpans] = useState<Array<{ key: string; count: number; errorCount: number; p95DurationMs: number }>>([]);
   const [llm, setLlm] = useState<Array<{ key: string; count: number; inputTokens: number; outputTokens: number; averageDurationMs: number }>>([]);
   const [series, setSeries] = useState<Array<{ timestamp: string; runCount: number; errorCount: number }>>([]);
@@ -182,11 +191,11 @@ function App() {
     const nextFilters = snapshot ?? resolveFilters(appliedDraft, appliedRange);
     if (!snapshot) setAppliedFilters(nextFilters);
     const filterQuery = query(nextFilters);
-    const tracePath = `/v1/telemetry/traces${filterQuery}`;
-    setError("");
+    const tracePath = `/v1/telemetry/traces${query({ ...nextFilters, limit: String(tracePageSize) })}`;
+    setError(""); setPageError("");
     // Keep the current results in place during refresh; new filters start clean.
     if (resetResults) {
-      setOverview(undefined); setRuns([]); setTraceTotal(0);
+      setOverview(undefined); setRuns([]); setTraceTotal(0); setTraceCursors({ 1: null }); setTracePageNumber(1); setJumpPage("1"); setNextTraceCursor(null);
       setSpans([]); setLlm([]); setSeries([]); setLoadedSections([]);
       setInspectorOpen(false); setOpeningTrace(false); setOpeningRunId(undefined); traceRequest.current++;
     }
@@ -206,13 +215,30 @@ function App() {
     // Each request updates its section immediately; this wait only tracks completion.
     await Promise.all([
       loadSection<Overview>("overview", `/v1/telemetry/analytics/overview${filterQuery}`, setOverview),
-      loadSection<{ items: Run[]; total: number }>("traces", tracePath, result => { setRuns(result.items); setTraceTotal(result.total); }),
+      loadSection<TracePage>("traces", tracePath, result => { setRuns(result.items); setTraceTotal(result.total); setTraceCursors({ 1: null }); setTracePageNumber(1); setJumpPage("1"); setNextTraceCursor(result.nextCursor ?? null); }),
       loadSection<typeof spans>("spans", `/v1/telemetry/analytics/spans${filterQuery}`, setSpans),
       loadSection<typeof llm>("llm", `/v1/telemetry/analytics/llm${filterQuery}`, setLlm),
       loadSection<typeof series>("series", `/v1/telemetry/analytics/timeseries${filterQuery}`, setSeries),
     ]);
     setLastUpdated(new Date().toLocaleTimeString());
     loadLock.current = false;
+  };
+  const changeTracePage = async (page: number, pageSize = tracePageSize) => {
+    if (loadLock.current) return;
+    loadLock.current = true;
+    setPageError(""); setSectionStates(current => ({ ...current, traces: "loading" }));
+    try {
+      const sizeChanged = pageSize !== tracePageSize;
+      const cursor = sizeChanged ? null : page === tracePageNumber + 1 ? nextTraceCursor : traceCursors[page];
+      const position: Record<string, string> = cursor ? { cursor } : page === 1 ? {} : { page: String(page) };
+      const result = await read<TracePage>(`/v1/telemetry/traces${query({ ...appliedFilters, limit: String(pageSize), ...position })}`);
+      setRuns(result.items); setTraceTotal(result.total); setTracePageSize(pageSize); setTracePageNumber(page); setJumpPage(String(page));
+      setTraceCursors(current => ({ ...(sizeChanged ? {} : current), [page]: result.cursor, ...(result.nextCursor ? { [page + 1]: result.nextCursor } : {}) }));
+      setNextTraceCursor(result.nextCursor);
+      traceRequest.current++; setInspectorOpen(false); setOpeningTrace(false); setOpeningRunId(undefined);
+      document.querySelector<HTMLElement>("#traces .panel-scroll")?.scrollTo({ top: 0 });
+    } catch { setPageError("This page could not be loaded. Your current page is still shown. Try again."); }
+    finally { setSectionStates(current => ({ ...current, traces: "success" })); loadLock.current = false; }
   };
   const applyFilters = () => {
     if (loadLock.current) return;
@@ -285,7 +311,8 @@ function App() {
     <div className="workspace-content">
     <div className="topbar"><span><Icon name="layers"/>Workspace<span className="breadcrumb-divider">/</span><b>{navigation.find(item => item.id === activeSection)?.label ?? "Overview"}</b></span><span className="topbar-caption"><span className="topbar-shortcut">OC</span>Telemetry workspace</span></div>
     <main id="dashboard" tabIndex={-1}>
-    <header className="page-header"><div className="page-title"><h1>Trace dashboard</h1><p>A clear view of every run, span, and model call.</p></div><div className="header-actions"><TimeRangePicker value={range} options={rangeOptions} onChange={setRange} from={filters.from} to={filters.to} onDatesChange={(from, to) => setFilters(current => ({ ...current, from, to }))}/><a className="button secondary" href={exportHref} onClick={event => void downloadExcel(event)} aria-disabled={exporting} aria-label={exporting ? "Preparing Excel download" : "Download Excel"}>{exporting ? <span className="mini-spinner"/> : <Icon name="download"/>}<ButtonLabel value={exporting ? "Preparing…" : "Download Excel"}/></a><button className="secondary refresh-button" aria-label={loading ? "Refreshing telemetry" : "Refresh telemetry"} disabled={loading} onClick={() => void refresh()}><span className={loading ? "refresh-icon spinning" : "refresh-icon"}><Icon name="refresh"/></span><ButtonLabel value={loading ? "Refreshing" : "Refresh"}/></button></div></header>
+    <header className="page-header"><div className="page-title"><h1>Trace dashboard</h1><p>A clear view of every run, span, and model call.</p></div><div className="header-actions"><TimeRangePicker value={range} options={rangeOptions} onChange={setRange} from={filters.from} to={filters.to} onDatesChange={(from, to) => setFilters(current => ({ ...current, from, to }))}/><a className="button secondary" href={exportHref} onClick={event => void downloadExcel(event)} aria-disabled={exporting} aria-label={exporting ? "Preparing Excel download" : "Download Excel"}>{exporting ? <span className="mini-spinner"/> : <Icon name="download"/>}<ButtonLabel value={exporting ? "Preparing…" : "Download Excel"}/></a><label className="optimization-toggle" title="Compare file scanning and all traces with SQLite, indexed lookups, and pagination"><span>Optimizations</span><input type="checkbox" role="switch" checked={optimizationsEnabled} onChange={event => { const url = new URL(location.href); if (event.target.checked) url.searchParams.delete("optimizations"); else url.searchParams.set("optimizations", "off"); location.assign(url.href); }}/><span className="optimization-track" aria-hidden="true"/></label><button className="secondary refresh-button" aria-label={loading ? "Refreshing telemetry" : "Refresh telemetry"} disabled={loading} onClick={() => void refresh()}><span className={loading ? "refresh-icon spinning" : "refresh-icon"}><Icon name="refresh"/></span><ButtonLabel value={loading ? "Refreshing" : "Refresh"}/></button></div></header>
+    {!optimizationsEnabled && <p className="baseline-note" role="status">Optimizations off: scanning telemetry files and loading all matching traces. This can take a while.</p>}
     <form className="filters" onSubmit={event => { event.preventDefault(); applyFilters(); }}>
       <DashboardSelect className="view-filter" label="View" value={view} onChange={selectView} options={viewOptions}/>
       <label>Run ID<input placeholder="Filter by run ID" value={filters.runId} onChange={e => setFilters({ ...filters, runId: e.target.value })}/></label>
@@ -304,15 +331,31 @@ function App() {
       <Metric loading={!overview && sectionStates.overview === "loading"} label="P95 duration" value={overview ? duration(overview.p95DurationMs) : "—"} detail="95th percentile"/>
       <Metric loading={!overview && sectionStates.overview === "loading"} label="Total spans" value={overview?.spanCount.toLocaleString() ?? "—"} detail="Collected events"/>
     </section>
-    <Panel title="Traces" status={sectionStates.traces} ready={loadedSections.includes("traces")} note={traceTotal ? `${runs.length.toLocaleString()} of ${traceTotal.toLocaleString()} traces` : "Run history"}>
+    <Panel title="Traces" status={sectionStates.traces} ready={loadedSections.includes("traces")} note={traceTotal ? `${traceTotal.toLocaleString()} matching traces` : "Run history"}>
       <TraceTable runs={runs} selectedRunId={inspectorOpen ? inspectorRunId : undefined} onOpenTrace={openTrace} openingRunId={openingRunId}/>
+      {pageError && <p className="pagination-error" role="alert">{pageError}</p>}
+      {optimizationsEnabled && loadedSections.includes("traces") && <nav className="trace-pagination" aria-label="Trace pages">
+        <p role="status" aria-live="polite">{runs.length ? `Showing ${((tracePageNumber - 1) * tracePageSize + 1).toLocaleString()}–${((tracePageNumber - 1) * tracePageSize + runs.length).toLocaleString()} of ${traceTotal.toLocaleString()} traces` : "No traces on this page"}<span>Page {tracePageNumber} of {Math.max(1, Math.ceil(traceTotal / tracePageSize))}</span></p>
+        <label className="page-size" htmlFor="trace-page-size">Traces per page
+          <select id="trace-page-size" value={tracePageSize} disabled={loading} onChange={event => void changeTracePage(1, Number(event.target.value))}>
+            {[25, 50, 100, 200].map(size => <option key={size} value={size}>{size}</option>)}
+          </select>
+        </label>
+        <div><button type="button" className="secondary" disabled={loading || tracePageNumber === 1} onClick={() => void changeTracePage(tracePageNumber - 1)}>Previous</button>
+        <button type="button" className="secondary" disabled={loading || !nextTraceCursor} onClick={() => nextTraceCursor && void changeTracePage(tracePageNumber + 1)}>Next</button></div>
+        <form className="page-jump" onSubmit={event => { event.preventDefault(); const page = Number(jumpPage); if (Number.isSafeInteger(page) && page >= 1 && page <= Math.max(1, Math.ceil(traceTotal / tracePageSize))) void changeTracePage(page); }}>
+          <label htmlFor="trace-page-number">Go to page</label>
+          <input id="trace-page-number" type="number" inputMode="numeric" min={1} max={Math.max(1, Math.ceil(traceTotal / tracePageSize))} step={1} required value={jumpPage} disabled={loading} onChange={event => setJumpPage(event.target.value)}/>
+          <button type="submit" className="secondary" disabled={loading}>Go</button>
+        </form>
+      </nav>}
     </Panel>
     <TraceInspector open={inspectorOpen} onClose={closeTrace} title={inspectorRunId || "Trace details"} loading={openingTrace} error={traceError}
       onPrevious={() => { const index = runs.findIndex(run => run.runId === inspectorRunId); if (index > 0) void openTrace(runs[index - 1].runId); }}
       onNext={() => { const index = runs.findIndex(run => run.runId === inspectorRunId); if (index >= 0 && index < runs.length - 1) void openTrace(runs[index + 1].runId); }}
       hasPrevious={!openingTrace && runs.findIndex(run => run.runId === inspectorRunId) > 0}
       hasNext={!openingTrace && runs.some((run, index) => run.runId === inspectorRunId && index < runs.length - 1)}>
-      {selected && <TraceWaterfall key={selected.runId} events={selected.events}/>}
+      {selected && <div key={selected.runId}><TraceStory events={selected.events} onCopy={() => copyText(formatJson({ runId: selected.runId, events: selected.events }))}/><details className="story-ai"><summary>AI analysis</summary><TraceAnalysis api={api} runId={selected.runId} events={selected.events}/></details></div>}
     </TraceInspector>
     <section className="analytics-grid">
       <Panel title="Run volume" status={sectionStates.series} ready={loadedSections.includes("series")} note="Runs over time"><div className="panel-scroll">{series.length ? <div className="volume-chart"><div className="chart-legend"><span><i/>Total runs</span><span><i/>Failed runs</span></div><div className="chart-columns">{series.map(row => <div className="chart-column" key={row.timestamp} title={`${row.timestamp}: ${row.runCount} runs, ${row.errorCount} failed`}><span className="chart-count">{row.runCount}</span><div className="chart-track"><div className="chart-total" style={{ height: `${Math.max(0, row.runCount / Math.max(1, ...series.map(value => value.runCount)) * 100)}%` }}><div className="chart-errors" style={{ height: `${row.runCount ? Math.min(100, row.errorCount / row.runCount * 100) : 0}%` }}/></div></div><span className="chart-date">{new Date(row.timestamp).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span><span className="chart-failed">{row.errorCount} failed</span></div>)}</div></div> : <EmptyState title="No run volume data" detail="Run counts will appear for the selected filters."/>}</div></Panel>
@@ -392,51 +435,6 @@ function Icon({ name }: { name: string }) {
   return <svg className="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;
 }
 
-function TraceWaterfall({ events }: { events: TraceEvent[] }) {
-  const [copyState, setCopyState] = useState<"idle" | "copying" | "copied" | "failed">("idle");
-  const runMetadata = events.find(event => event.type === "run")?.metadata;
-  const finalOutput = typeof runMetadata === "object" && runMetadata !== null && typeof (runMetadata as Record<string, unknown>).finalOutput === "string" ? (runMetadata as Record<string, string>).finalOutput : undefined;
-  const start = Math.min(...events.map(event => Date.parse(event.startedAt)));
-  const end = Math.max(...events.map(event => Date.parse(event.endedAt)));
-  const total = Math.max(1, end - start);
-  const copyTrace = async () => {
-    setCopyState("copying");
-    try {
-      await copyText(formatTraceForClipboard(events));
-      setCopyState("copied");
-    } catch {
-      setCopyState("failed");
-    }
-  };
-  if (!events.length) return <EmptyState title="No events in this trace" detail="Select another run to inspect its spans."/>;
-  return <div className="waterfall"><div className="trace-toolbar"><span>{events.length} events</span><button className={`secondary copy-trace ${copyState === "copied" ? "copied" : ""}`} disabled={copyState === "copying"} aria-label={copyState === "copying" ? "Copying trace" : copyState === "copied" ? "Trace copied" : copyState === "failed" ? "Copy failed. Try again" : "Copy nested trace"} onClick={() => void copyTrace()}>{copyState === "copying" ? <span className="mini-spinner"/> : <Icon name={copyState === "copied" ? "check" : "layers"}/>}<ButtonLabel value={copyState === "copying" ? "Copying…" : copyState === "copied" ? "Copied" : copyState === "failed" ? "Copy failed" : "Copy nested trace"}/></button></div>{finalOutput && <section className="trace-result"><span>Final output</span><p>{finalOutput}</p></section>}<div className="waterfall-scroll"><div className="waterfall-grid"><div className="waterfall-head"><span>Span</span><span>Duration</span><div className="timeline-ruler" aria-label="Elapsed time">{[0, .25, .5, .75, 1].map(fraction => <span key={fraction}>{duration(Math.round(total * fraction))}</span>)}</div></div><TraceRows nodes={traceTree(events)} depth={0} start={start} total={total}/></div></div></div>;
-}
-
-function TraceRows({ nodes, depth, start, total }: { nodes: TraceNode[]; depth: number; start: number; total: number }) {
-  return <>{nodes.map(node => <TraceBranch key={node.event.eventId} node={node} depth={depth} start={start} total={total}/>)}</>;
-}
-function TraceBranch({ node, depth, start, total }: { node: TraceNode; depth: number; start: number; total: number }) {
-  const [expanded, setExpanded] = useState(true);
-  const event = node.event;
-  const elapsed = Math.max(0, Date.parse(event.startedAt) - start);
-  const offset = Math.min(100, elapsed / total * 100);
-  const width = Math.max(1.5, event.durationMs / total * 100);
-  const timing = `${event.name}: starts at ${duration(elapsed)}, lasts ${duration(event.durationMs)}, ends at ${duration(elapsed + event.durationMs)}`;
-  return <div><article className="trace-row"><div className="trace-name" style={{ paddingLeft: `${Math.min(depth, 6) * 16}px` }}>
-    {node.children.length > 0 ? <button type="button" className="branch-toggle" aria-expanded={expanded} aria-label={`${expanded ? "Collapse" : "Expand"} ${event.name}`} onClick={() => setExpanded(!expanded)}><Icon name="chevron"/></button> : <span className="branch-spacer"/>}
-    <span className={`type-badge ${event.type}`}>{event.type}</span><span className={`pill ${event.status}`}>{event.status}</span><b title={event.name}>{event.name}</b></div><span>{duration(event.durationMs)}</span>
-    <div className="trace-timeline" tabIndex={0} aria-label={timing}><i className={`trace-bar ${event.type}`} style={{ left: `${offset}%`, width: `${Math.min(width, 100 - offset)}%` }}/><span className="timing-tooltip" role="tooltip">{duration(elapsed)} start · {duration(event.durationMs)} duration · {duration(elapsed + event.durationMs)} end</span></div>
-    </article>{(Boolean(event.metadata) || Boolean(event.llm)) && <details className="trace-details"><summary>Event details</summary>{Boolean(event.metadata) && <pre>{formatJson(event.metadata)}</pre>}{Boolean(event.llm) && <pre>{formatJson(event.llm)}</pre>}</details>}
-    {expanded && <TraceRows nodes={node.children} depth={depth + 1} start={start} total={total}/>}</div>;
-}
-
-function traceTree(events: TraceEvent[]): TraceNode[] {
-  const nodes = new Map(events.map(event => [event.spanId, { event, children: [] as TraceNode[] }]));
-  const roots: TraceNode[] = [];
-  for (const node of nodes.values()) { const parent = node.event.parentSpanId ? nodes.get(node.event.parentSpanId) : undefined; if (parent) parent.children.push(node); else roots.push(node); }
-  return roots;
-}
-
 async function copyText(value: string) {
   if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(value);
   const input = document.createElement("textarea");
@@ -450,18 +448,4 @@ async function copyText(value: string) {
   if (!copied) throw new Error("Clipboard copy was unavailable");
 }
 
-function formatTraceForClipboard(events: TraceEvent[]) {
-  const indent = (value: string, prefix: string) => value.split("\n").map(line => `${prefix}${line}`).join("\n");
-  const render = (nodes: TraceNode[], prefix = ""): string[] => nodes.flatMap((node, index) => {
-    const isLast = index === nodes.length - 1;
-    const branch = `${prefix}${isLast ? "└─" : "├─"}`;
-    const childPrefix = `${prefix}${isLast ? "  " : "│ "}`;
-    const event = node.event;
-    const lines = [`${branch} [${event.type} · ${event.status} · ${duration(event.durationMs)}] ${event.name}`, `${childPrefix}started: ${event.startedAt}`];
-    if (event.metadata !== undefined) lines.push(`${childPrefix}metadata:\n${indent(formatJson(event.metadata), `${childPrefix}  `)}`);
-    if (event.llm !== undefined) lines.push(`${childPrefix}llm:\n${indent(formatJson(event.llm), `${childPrefix}  `)}`);
-    return [...lines, ...render(node.children, childPrefix)];
-  });
-  return [`Trace ${events[0]?.runId ?? ""}`, ...render(traceTree(events))].join("\n");
-}
 createRoot(document.getElementById("root")!).render(<App />);

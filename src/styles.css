@@ -467,3 +467,49 @@ html[data-input=keyboard] button:active:not(:disabled), html[data-input=keyboard
   html:not([data-input=keyboard]) .filter-pending,
   html:not([data-input=keyboard]) .copy-id-glyph { transition-duration: 80ms !important; }
 }
+.trace-pagination { display: flex; flex-direction: row; overflow: visible; padding-bottom: 0; align-items: center; justify-content: space-between; gap: 16px; margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e5e2; }
+.trace-pagination p { margin: 0; font-size: 12px; color: #565651; font-variant-numeric: tabular-nums; }
+.trace-pagination p span { display: block; margin-top: 4px; font-size: 11px; color: #73736d; }
+.trace-pagination>div { display: flex; gap: 8px; }
+.pagination-error { margin: 12px 0 0; font-size: 12px; color: #a83232; }
+@media(max-width: 600px) { .trace-pagination { flex-wrap: wrap; } .trace-pagination>div { width: 100%; } .trace-pagination button { flex: 1; min-height: 44px; } }
+
+.trace-pagination { flex-wrap: wrap; }
+.page-jump { display: flex; align-items: center; gap: 8px; }
+.page-jump label { font-size: 12px; color: #565651; white-space: nowrap; }
+.page-jump input { width: 76px; min-height: 38px; padding: 8px; font-variant-numeric: tabular-nums; }
+@media(max-width: 600px) { .page-jump { width: 100%; } .page-jump input { font-size: 16px; min-height: 44px; } .page-jump button { flex: 0 0 auto; } }
+
+.page-size { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #565651; white-space: nowrap; }
+.page-size select { width: 76px; min-height: 38px; padding: 8px; border: 1px solid #dcdcd7; border-radius: 8px; background: #fafaf9; color: #292928; font: inherit; font-variant-numeric: tabular-nums; }
+.page-size select:focus-visible { outline: 3px solid #006adc44; outline-offset: 2px; }
+@media(max-width: 600px) { .page-size { width: 100%; justify-content: space-between; } .page-size select { min-height: 44px; font-size: 16px; } }
+
+/* One comparison switch, beside the existing refresh action. */
+.optimization-toggle { display: inline-flex; align-items: center; position: relative; gap: 8px; min-height: 44px; cursor: pointer; font-size: 12px; white-space: nowrap; }
+.optimization-toggle input { position: absolute; opacity: 0; width: 100%; height: 100%; inset: 0; margin: 0; cursor: pointer; }
+.optimization-track { display: block; width: 32px; height: 20px; border-radius: 12px; background: #aaa9a3; pointer-events: none; }
+.optimization-track::after { content: ""; display: block; width: 16px; height: 16px; margin: 2px; border-radius: 50%; background: white; }
+.optimization-toggle input:checked + .optimization-track { background: #292928; }
+.optimization-toggle input:checked + .optimization-track::after { transform: translateX(12px); }
+.optimization-toggle input:focus-visible + .optimization-track { outline: 3px solid #006adc88; outline-offset: 3px; }
+.baseline-note { font-size: 12px; color: #725319; margin: 0 0 16px; }
+
+.trace-analysis { padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--border, #e5e5e2); }
+.analysis-toolbar { display: flex; align-items: center; gap: 12px; }
+.analysis-caption { font-size: 11px; line-height: 1.6; color: #73736d; margin: 8px 0 0; }
+.analysis-result { font-size: 13px; line-height: 1.65; overflow-wrap: anywhere; }
+.analysis-result > p { margin: 16px 0; }
+.analysis-finding { margin: 14px 0; }
+.analysis-finding > b, .analysis-result h3 { font-size: 12px; font-weight: 600; margin: 14px 0 4px; }
+.analysis-finding p { margin: 4px 0; }
+.analysis-evidence { display: flex; flex-wrap: wrap; gap: 6px 12px; }
+.analysis-evidence button { font-size: 11px; text-align: left; white-space: normal; overflow-wrap: anywhere; }
+.analysis-result ul { margin: 4px 0 12px; padding-left: 18px; }
+.analysis-result li + li { margin-top: 5px; }
+.analysis-error { font-size: 12px; line-height: 1.6; color: #a83232; }
+.trace-row:focus { outline: 2px solid #006adc88; outline-offset: 2px; }
+
+.analysis-context { margin-top: 12px; font-size: 11px; color: #73736d; }
+.analysis-context summary { cursor: pointer; }
+.analysis-context li { overflow-wrap: anywhere; }
