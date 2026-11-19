@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { authenticatedFetch } from "./AuthGate";
 
 type Event = { metadata?: unknown; spanId: string; name: string; durationMs: number };
 type Result = { evidenceOnly: boolean; model: string; summary: string; findings: { kind: string; text: string; spanIds: string[] }[];
@@ -22,7 +23,7 @@ export function TraceAnalysis({ api, runId, events }: { api: string; runId: stri
     const controller = new AbortController(); request.current = controller;
     setLoading(true); setError("");
     try {
-      const response = await fetch(`${api}/v1/telemetry/traces/${encodeURIComponent(runId)}/analyze`, { method: "POST", signal: controller.signal });
+      const response = await authenticatedFetch(`${api}/v1/telemetry/traces/${encodeURIComponent(runId)}/analyze`, { method: "POST", signal: controller.signal });
       const body = await response.json();
       if (!response.ok) throw new Error(body.error || "Analysis failed. Try again.");
       if (!controller.signal.aborted) setResult(body as Result);

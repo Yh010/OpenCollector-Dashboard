@@ -2,3 +2,7 @@ node_modules
 dist
 .impeccable/review/
 .impeccable/preview*.log
+
+.env
+.env.*
+!.env.example

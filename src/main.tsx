@@ -7,6 +7,7 @@ import { DashboardSelect, TimeRangePicker, TraceInspector } from "./DashboardCon
 import "./styles.css";
 import { TraceAnalysis } from "./TraceAnalysis";
 import { TraceStory } from "./TraceDebugger";
+import { AuthGate, AccountMenu, authenticatedFetch } from "./AuthGate";
 
 const optimizationsEnabled = new URLSearchParams(location.search).get("optimizations") !== "off";
 const api = import.meta.env.VITE_OPENCOLLECTOR_URL ?? "http://127.0.0.1:3000";
@@ -19,7 +20,7 @@ type SectionStatus = "idle" | "loading" | "success" | "error";
 const initialSectionStates: Record<Section, SectionStatus> = { overview: "idle", traces: "idle", spans: "idle", llm: "idle", series: "idle" };
 
 function query(filters: Record<string, string>) { const params = new URLSearchParams(Object.entries(filters).filter(([, value]) => value)); return params.size ? `?${params}` : ""; }
-async function read<T>(path: string): Promise<T> { const url = new URL(`${api}${path}`); if (!optimizationsEnabled) url.searchParams.set("optimizations", "off"); const response = await fetch(url); if (!response.ok) throw new Error(await response.text()); return response.json() as Promise<T>; }
+async function read<T>(path: string): Promise<T> { const url = new URL(`${api}${path}`); if (!optimizationsEnabled) url.searchParams.set("optimizations", "off"); const response = await authenticatedFetch(url); if (!response.ok) throw new Error(await response.text()); return response.json() as Promise<T>; }
 const duration = (value: number) => value >= 1000 ? `${(value / 1000).toFixed(2)}s` : `${value}ms`;
 const formatJson = (value: unknown) => JSON.stringify(value, null, 2) ?? "undefined";
 
@@ -263,7 +264,7 @@ function App() {
     if (exporting) return;
     setExporting(true); setError("");
     try {
-      const response = await fetch(exportHref);
+      const response = await authenticatedFetch(exportHref);
       if (!response.ok) throw new Error("Export failed");
       const url = URL.createObjectURL(await response.blob());
       const link = document.createElement("a");
@@ -309,7 +310,7 @@ function App() {
       <div className="sidebar-bottom"><span className={`connection-dot ${failedSections ? "offline" : loading ? "pending" : ""}`}/><div><b>{loading ? "Connecting to collector" : failedSections ? "Connection needs attention" : "Collector connected"}</b><span className="api-address" title={api}>{api}</span></div></div>
     </aside>
     <div className="workspace-content">
-    <div className="topbar"><span><Icon name="layers"/>Workspace<span className="breadcrumb-divider">/</span><b>{navigation.find(item => item.id === activeSection)?.label ?? "Overview"}</b></span><span className="topbar-caption"><span className="topbar-shortcut">OC</span>Telemetry workspace</span></div>
+    <div className="topbar"><span><Icon name="layers"/>Workspace<span className="breadcrumb-divider">/</span><b>{navigation.find(item => item.id === activeSection)?.label ?? "Overview"}</b></span><span className="topbar-caption"><AccountMenu/></span></div>
     <main id="dashboard" tabIndex={-1}>
     <header className="page-header"><div className="page-title"><h1>Trace dashboard</h1><p>A clear view of every run, span, and model call.</p></div><div className="header-actions"><TimeRangePicker value={range} options={rangeOptions} onChange={setRange} from={filters.from} to={filters.to} onDatesChange={(from, to) => setFilters(current => ({ ...current, from, to }))}/><a className="button secondary" href={exportHref} onClick={event => void downloadExcel(event)} aria-disabled={exporting} aria-label={exporting ? "Preparing Excel download" : "Download Excel"}>{exporting ? <span className="mini-spinner"/> : <Icon name="download"/>}<ButtonLabel value={exporting ? "Preparing…" : "Download Excel"}/></a><label className="optimization-toggle" title="Compare file scanning and all traces with SQLite, indexed lookups, and pagination"><span>Optimizations</span><input type="checkbox" role="switch" checked={optimizationsEnabled} onChange={event => { const url = new URL(location.href); if (event.target.checked) url.searchParams.delete("optimizations"); else url.searchParams.set("optimizations", "off"); location.assign(url.href); }}/><span className="optimization-track" aria-hidden="true"/></label><button className="secondary refresh-button" aria-label={loading ? "Refreshing telemetry" : "Refresh telemetry"} disabled={loading} onClick={() => void refresh()}><span className={loading ? "refresh-icon spinning" : "refresh-icon"}><Icon name="refresh"/></span><ButtonLabel value={loading ? "Refreshing" : "Refresh"}/></button></div></header>
     {!optimizationsEnabled && <p className="baseline-note" role="status">Optimizations off: scanning telemetry files and loading all matching traces. This can take a while.</p>}
@@ -448,4 +449,4 @@ async function copyText(value: string) {
   if (!copied) throw new Error("Clipboard copy was unavailable");
 }
 
-createRoot(document.getElementById("root")!).render(<App />);
+createRoot(document.getElementById("root")!).render(<AuthGate><App /></AuthGate>);

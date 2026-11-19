@@ -1,0 +1,11 @@
+.auth-page { min-height: 100dvh; width: min(100%, 520px); padding: 40px 28px; display: flex; flex-direction: column; justify-content: center; gap: 44px; }
+.auth-brand { padding: 0; align-self: flex-start; }
+.auth-content h1 { font-size: clamp(28px, 5vw, 34px); letter-spacing: -.035em; }
+.auth-content > p { color: var(--muted); margin: 14px 0 0; max-width: 44ch; line-height: 1.65; }
+.auth-actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.auth-actions button { min-height: 44px; }
+.auth-content .auth-error { color: #a13630; }
+.auth-content .auth-note { margin-top: 28px; font-size: 12px; }
+.auth-account { display: inline-flex; align-items: center; gap: 12px; min-width: 0; }
+.auth-email { max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 700px) { .auth-email { display: none; } .auth-account button { min-height: 44px; } }
